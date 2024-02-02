@@ -7,7 +7,8 @@ namespace Mithril.Instants.Tests.Extensions;
 public sealed class DateTimeOffsetExtensionsTests
 {
     [Fact]
-    public void Gets_local_date_from_date_with_offset()
+    [Trait("Method", "ToLocal")]
+    public void Gets_a_local_date_from_a_date_with_offset()
     {
         DateTimeOffset.Parse("2024-01-02 01:00:00 +00:00").ToLocal("America/New_York")
             .Should().Be(DateTime.Parse("2024-01-01 20:00:00"));

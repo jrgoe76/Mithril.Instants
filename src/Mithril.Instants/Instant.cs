@@ -21,15 +21,21 @@ public readonly record struct Instant : IComparable
     }
 
     // Use this factory method with caution, IInstantClock.Now is recommended
+    [ExcludeFromCodeCoverage]
     public static Instant Now(string? timeZone = null)
         => new (DateTimeOffset.UtcNow, timeZone ?? TimeZoneProviderDefault.TIME_ZONE);
 
-    public Instant Add(TimeSpan timeSpan)
-        => new (UtcValue.Add(timeSpan), _timeZone);
+    // Use this factory method with caution, IInstantFactory.Create(DateTime value) is recommended
+    [ExcludeFromCodeCoverage]
+    public static Instant FromLocal(DateTime value, string timeZone)
+        => new (value.ToUtc(timeZone), timeZone);
 
     [ExcludeFromCodeCoverage]
     public DateTime ToLocal()
         => UtcValue.ToLocal(_timeZone);
+
+    public Instant Add(TimeSpan timeSpan)
+        => new (UtcValue.Add(timeSpan), _timeZone);
 
     public static bool operator > (Instant left, Instant right)
         => left.UtcValue > right.UtcValue;

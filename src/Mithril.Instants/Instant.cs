@@ -51,7 +51,13 @@ public readonly record struct Instant : IComparable
         => UtcValue.ToLocal(_timeZone);
 
     public Instant Add(TimeSpan timeSpan)
-        => new (UtcValue.Add(timeSpan), _timeZone);
+        => this with { UtcValue = UtcValue.Add(timeSpan) };
+
+    public Instant Subtract(TimeSpan timeSpan)
+        => this with { UtcValue = UtcValue.Subtract(timeSpan) };
+
+    public TimeSpan Subtract(Instant other)
+        => UtcValue.Subtract(other.UtcValue);
 
     public int CompareTo(object? obj)
     {
@@ -68,15 +74,19 @@ public readonly record struct Instant : IComparable
     public override string ToString()
         => $"{ToLocal():g} ( {_timeZone} )";
 
-    public static bool operator >(Instant left, Instant right)
+    public static bool operator > (Instant left, Instant right)
         => left.UtcValue > right.UtcValue;
 
-    public static bool operator >=(Instant left, Instant right)
+    public static bool operator >= (Instant left, Instant right)
         => left > right || left == right;
 
-    public static bool operator <(Instant left, Instant right)
+    public static bool operator < (Instant left, Instant right)
         => left.UtcValue < right.UtcValue;
 
-    public static bool operator <=(Instant left, Instant right)
+    public static bool operator <= (Instant left, Instant right)
         => left < right || left == right;
+
+    [ExcludeFromCodeCoverage]
+    public static TimeSpan operator - (Instant left, Instant right)
+        => left.Subtract(right);
 }

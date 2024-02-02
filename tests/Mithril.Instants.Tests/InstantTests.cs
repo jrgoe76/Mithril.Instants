@@ -9,7 +9,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", "Constructor")]
-    public void Throws_an_error_creating_an_instance_with_a_null_or_empty_time_zone()
+    public void Throws_an_error_creating_an_instant_with_a_null_or_empty_time_zone()
     {
         ((Func<Instant>)(() => new Instant(DateTimeOffset.Now, null!)))
             .Should().Throw<ArgumentException>();
@@ -19,12 +19,32 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", "Add")]
-    public void Creates_an_instance_with_the_added_time_span()
+    public void Creates_an_instant_with_an_added_interval()
     {
-        TimeSpan oneHour = TimeSpan.FromHours(1);
+        var oneHour = TimeSpan.FromHours(1);
 
-        _now.Add(oneHour).UtcValue
-            .Should().Be(_now.UtcValue.Add(oneHour));
+        _now.Add(oneHour)
+            .Should().Be(_now with { UtcValue = _now.UtcValue.Add(oneHour) });
+    }
+
+    [Fact]
+    [Trait("Method", "Subtract(TimeSpan)")]
+    public void Creates_an_instant_with_a_subtracted_interval()
+    {
+        var oneHour = TimeSpan.FromHours(1);
+
+        _now.Subtract(oneHour)
+            .Should().Be(_now with { UtcValue = _now.UtcValue.Subtract(oneHour) });
+    }
+
+    [Fact]
+    [Trait("Method", "Subtract(Instant)")]
+    public void Gets_the_interval_between_this_instant_and_another_one()
+    {
+        var oneHour = TimeSpan.FromHours(1);
+
+        _now.Subtract(_now.Subtract(oneHour))
+            .Should().Be(oneHour);
     }
 
     [Fact]
@@ -39,7 +59,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", "CompareTo")]
-    public void Gets_a_minus_one_comparing_to_a_bigger_instance()
+    public void Gets_a_minus_one_comparing_to_a_bigger_instant()
     {
         _now.CompareTo(_now.Add(TimeSpan.FromHours(1)))
             .Should().Be(-1);
@@ -47,7 +67,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", "CompareTo")]
-    public void Gets_a_one_comparing_to_smaller_instance()
+    public void Gets_a_one_comparing_to_smaller_instant()
     {
         _now.CompareTo(_now.Add(TimeSpan.FromHours(-1)))
             .Should().Be(1);
@@ -55,7 +75,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", "CompareTo")]
-    public void Gets_a_zero_comparing_to_an_equal_instance()
+    public void Gets_a_zero_comparing_to_an_equal_instant()
     {
         _now.CompareTo(_now)
             .Should().Be(0);
@@ -63,7 +83,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", "ToString")]
-    public void Gets_the_instance_representation()
+    public void Gets_the_instant_representation()
     {
         const string timeZone = "America/New_York";
         var utc20240101At10Am = DateTimeOffset.Parse("2024-01-01 10:00:00 +00:00");
@@ -74,7 +94,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Operator", ">")]
-    public void Asserts_that_the_left_instance_is_bigger_than_the_right_one()
+    public void Asserts_that_the_left_instant_is_bigger_than_the_right_one()
     {
         (_now.Add(TimeSpan.FromHours(1)) > _now)
             .Should().BeTrue();
@@ -82,7 +102,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Operator", ">=")]
-    public void Asserts_that_the_left_instance_is_bigger_than_or_equal_to_the_right_one()
+    public void Asserts_that_the_left_instant_is_bigger_than_or_equal_to_the_right_one()
     {
         var right = _now;
 
@@ -94,7 +114,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Operator", "<")]
-    public void Asserts_that_the_left_instance_is_smaller_than_the_right_one()
+    public void Asserts_that_the_left_instant_is_smaller_than_the_right_one()
     {
         (_now.Add(TimeSpan.FromHours(-1)) < _now)
             .Should().BeTrue();
@@ -102,7 +122,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Operator", "<=")]
-    public void Asserts_that_the_left_instance_is_smaller_than_or_equal_to_the_right_one()
+    public void Asserts_that_the_left_instant_is_smaller_than_or_equal_to_the_right_one()
     {
         var right = _now;
 

@@ -6,21 +6,13 @@ namespace Mithril.Instants.Tests;
 public sealed class InstantTests
 {
     private readonly Instant _now = Instant.Now();
-    private readonly DateTimeOffset _20240101InUtcPlus1 = new (2024, 1, 1, 0, 0, 0, TimeSpan.FromHours(1));
-
-    [Fact]
-    public void Throws_error_creating_from_non_Utc_date()
-    {
-        ((Func<Instant>)(() => new Instant(_20240101InUtcPlus1, string.Empty)))
-            .Should().Throw<ArgumentException>();
-    }
 
     [Fact]
     public void Throws_error_creating_from_null_or_empty_time_zone()
     {
-        ((Func<Instant>)(() => new Instant(DateTimeOffset.UtcNow, null!)))
+        ((Func<Instant>)(() => new Instant(DateTimeOffset.Now, null!)))
             .Should().Throw<ArgumentException>();
-        ((Func<Instant>)(() => new Instant(DateTimeOffset.UtcNow, string.Empty)))
+        ((Func<Instant>)(() => new Instant(DateTimeOffset.Now, string.Empty)))
             .Should().Throw<ArgumentException>();
     }
 
@@ -79,9 +71,33 @@ public sealed class InstantTests
     }
 
     [Fact]
-    public void Gets_minus1_comparing_to_bigger()
+    public void Gets_minus_one_comparing_to_bigger()
     {
         _now.CompareTo(_now.Add(TimeSpan.FromHours(1)))
             .Should().Be(-1);
+    }
+
+    [Fact]
+    public void Gets_one_comparing_to_smaller()
+    {
+        _now.CompareTo(_now.Add(TimeSpan.FromHours(-1)))
+            .Should().Be(1);
+    }
+
+    [Fact]
+    public void Gets_zero_comparing_to_equal()
+    {
+        _now.CompareTo(_now)
+            .Should().Be(0);
+    }
+
+    [Fact]
+    public void Gets_representation()
+    {
+        const string timeZone = "America/New_York";
+        var utc20240101At10Am = DateTimeOffset.Parse("2024-01-01 10:00:00 +00:00");
+
+        new Instant(utc20240101At10Am, timeZone).ToString()
+            .Should().Be($"1/1/2024 5:00 AM ( {timeZone} )");
     }
 }

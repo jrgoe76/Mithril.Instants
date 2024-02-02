@@ -28,46 +28,6 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Operator", ">")]
-    public void Asserts_that_the_left_instance_is_bigger_than_the_right_one()
-    {
-        (_now.Add(TimeSpan.FromHours(1)) > _now)
-            .Should().BeTrue();
-    }
-
-    [Fact]
-    [Trait("Operator", ">=")]
-    public void Asserts_that_the_left_instance_is_bigger_than_or_equal_to_the_right_one()
-    {
-        var right = _now;
-
-        (_now.Add(TimeSpan.FromHours(1)) >= right)
-            .Should().BeTrue();
-        (_now >= right)
-            .Should().BeTrue();
-    }
-
-    [Fact]
-    [Trait("Operator", "<")]
-    public void Asserts_that_the_left_instance_is_smaller_than_the_right_one()
-    {
-        (_now.Add(TimeSpan.FromHours(-1)) < _now)
-            .Should().BeTrue();
-    }
-
-    [Fact]
-    [Trait("Operator", "<=")]
-    public void Asserts_that_the_left_instance_is_smaller_than_or_equal_to_the_right_one()
-    {
-        var right = _now;
-
-        (_now.Add(TimeSpan.FromHours(-1)) <= right)
-            .Should().BeTrue();
-        (_now <= right)
-            .Should().BeTrue();
-    }
-
-    [Fact]
     [Trait("Method", "CompareTo")]
     public void Throws_an_error_comparing_to_a_null_or_one_of_another_type()
     {
@@ -110,5 +70,45 @@ public sealed class InstantTests
 
         new Instant(utc20240101At10Am, timeZone).ToString()
             .Should().Be($"1/1/2024 5:00 AM ( {timeZone} )");
+    }
+
+    [Fact]
+    [Trait("Operator", ">")]
+    public void Asserts_that_the_left_instance_is_bigger_than_the_right_one()
+    {
+        (_now.Add(TimeSpan.FromHours(1)) > _now)
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    [Trait("Operator", ">=")]
+    public void Asserts_that_the_left_instance_is_bigger_than_or_equal_to_the_right_one()
+    {
+        var right = _now;
+
+        (_now.Add(TimeSpan.FromHours(1)) >= right)
+            .Should().BeTrue();
+        (_now >= right)
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    [Trait("Operator", "<")]
+    public void Asserts_that_the_left_instance_is_smaller_than_the_right_one()
+    {
+        (_now.Add(TimeSpan.FromHours(-1)) < _now)
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    [Trait("Operator", "<=")]
+    public void Asserts_that_the_left_instance_is_smaller_than_or_equal_to_the_right_one()
+    {
+        var right = _now;
+
+        (_now.Add(TimeSpan.FromHours(-1)) <= right)
+            .Should().BeTrue();
+        (_now <= right)
+            .Should().BeTrue();
     }
 }

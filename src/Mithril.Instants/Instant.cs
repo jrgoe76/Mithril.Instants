@@ -9,6 +9,22 @@ public readonly record struct Instant : IComparable
 
     internal DateTimeOffset UtcValue { get; init; }
 
+    public DayOfWeek DayOfWeek => ToLocal().DayOfWeek;
+    public DateTime Date => ToLocal().Date;
+    public int Year => ToLocal().Year;
+    public int Month => ToLocal().Month;
+    public int Day => ToLocal().Day;
+
+    public TimeSpan TimeOfDay => ToLocal().TimeOfDay;
+    public int Hour => ToLocal().Hour;
+    public int Minute => ToLocal().Minute;
+    public int Second => ToLocal().Second;
+    public int Millisecond => ToLocal().Millisecond;
+    public int Microsecond => ToLocal().Microsecond;
+    public int Nanosecond => ToLocal().Nanosecond;
+
+    public long Ticks => ToLocal().Ticks;
+
     public Instant(DateTimeOffset value, string timeZone)
     {
         if (string.IsNullOrEmpty(timeZone))
@@ -37,18 +53,6 @@ public readonly record struct Instant : IComparable
     public Instant Add(TimeSpan timeSpan)
         => new (UtcValue.Add(timeSpan), _timeZone);
 
-    public static bool operator > (Instant left, Instant right)
-        => left.UtcValue > right.UtcValue;
-
-    public static bool operator >= (Instant left, Instant right)
-        => left > right || left == right;
-
-    public static bool operator < (Instant left, Instant right)
-        => left.UtcValue < right.UtcValue;
-
-    public static bool operator <=(Instant left, Instant right)
-        => left < right || left == right;
-
     public int CompareTo(object? obj)
     {
         if (obj is not Instant other)
@@ -63,4 +67,16 @@ public readonly record struct Instant : IComparable
 
     public override string ToString()
         => $"{ToLocal():g} ( {_timeZone} )";
+
+    public static bool operator >(Instant left, Instant right)
+        => left.UtcValue > right.UtcValue;
+
+    public static bool operator >=(Instant left, Instant right)
+        => left > right || left == right;
+
+    public static bool operator <(Instant left, Instant right)
+        => left.UtcValue < right.UtcValue;
+
+    public static bool operator <=(Instant left, Instant right)
+        => left < right || left == right;
 }

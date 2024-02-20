@@ -7,19 +7,20 @@ public sealed class InstantTests
 {
     private readonly Instant _now = Instant.Now();
 
-    [Fact]
-    [Trait("Method", "Constructor")]
-    public void Throws_an_error_creating_an_Instant_with_a_null_or_empty_time_zone()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [Trait("Constructor", nameof(Instant))]
+    public void Throws_an_error_creating_an_Instant_with_a_null_or_empty_timeZone(
+        string? timeZone)
     {
-        ((Func<Instant>)(() => new Instant(DateTimeOffset.Now, null!)))
-            .Should().Throw<ArgumentException>();
-        ((Func<Instant>)(() => new Instant(DateTimeOffset.Now, string.Empty)))
+        ((Func<Instant>)(() => new Instant(DateTimeOffset.Now, timeZone!)))
             .Should().Throw<ArgumentException>();
     }
 
     [Fact]
-    [Trait("Method", "Add")]
-    public void Creates_an_Instant_with_an_added_interval()
+    [Trait("Method", nameof(Instant.Add))]
+    public void Returns_an_Instant_with_an_added_interval()
     {
         var oneHour = TimeSpan.FromHours(1);
 
@@ -28,8 +29,8 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", "Subtract(TimeSpan)")]
-    public void Creates_an_Instant_with_a_subtracted_interval()
+    [Trait("Method", $"{nameof(Instant.Subtract)}({nameof(TimeSpan)})")]
+    public void Returns_an_Instant_with_a_subtracted_interval()
     {
         var oneHour = TimeSpan.FromHours(1);
 
@@ -38,7 +39,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", "Subtract(Instant)")]
+    [Trait("Method", $"{nameof(Instant.Subtract)}({nameof(Instant)})")]
     public void Returns_interval_between_this_and_another_Instant()
     {
         var oneHour = TimeSpan.FromHours(1);
@@ -47,18 +48,19 @@ public sealed class InstantTests
             .Should().Be(oneHour);
     }
 
-    [Fact]
-    [Trait("Method", "CompareTo")]
-    public void Throws_an_error_comparing_to_a_null_or_no_Instant_type()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("not an Instant")]
+    [Trait("Method", nameof(Instant.CompareTo))]
+    public void Throws_an_error_comparing_to_a_null_or_no_Instant_type(
+        object? obj)
     {
-        ((Func<int>)(() => _now.CompareTo(null)))
-            .Should().Throw<InvalidCastException>();
-        ((Func<int>)(() => _now.CompareTo("not an Instant")))
+        ((Func<int>)(() => _now.CompareTo(obj)))
             .Should().Throw<InvalidCastException>();
     }
 
     [Fact]
-    [Trait("Method", "CompareTo")]
+    [Trait("Method", nameof(Instant.CompareTo))]
     public void Returns_minus1_comparing_to_a_bigger_Instant()
     {
         _now.CompareTo(_now.Add(TimeSpan.FromHours(1)))
@@ -66,7 +68,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", "CompareTo")]
+    [Trait("Method", nameof(Instant.CompareTo))]
     public void Returns_1_comparing_to_smaller_Instant()
     {
         _now.CompareTo(_now.Add(TimeSpan.FromHours(-1)))
@@ -74,7 +76,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", "CompareTo")]
+    [Trait("Method", nameof(Instant.CompareTo))]
     public void Returns_0_comparing_to_an_equal_Instant()
     {
         _now.CompareTo(_now)
@@ -82,7 +84,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", "ToString")]
+    [Trait("Method", nameof(Instant.ToString))]
     public void Returns_the_Instant_representation()
     {
         const string timeZone = "America/New_York";

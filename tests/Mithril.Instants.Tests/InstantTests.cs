@@ -20,7 +20,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", nameof(Instant.Add))]
-    public void Returns_an_Instant_with_an_added_interval()
+    public void Creates_an_Instant_from_this_with_an_added_interval()
     {
         var oneHour = TimeSpan.FromHours(1);
 
@@ -30,7 +30,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", $"{nameof(Instant.Subtract)}({nameof(TimeSpan)})")]
-    public void Returns_an_Instant_with_a_subtracted_interval()
+    public void Creates_an_Instant_from_this_with_a_subtracted_interval()
     {
         var oneHour = TimeSpan.FromHours(1);
 
@@ -85,7 +85,7 @@ public sealed class InstantTests
 
     [Fact]
     [Trait("Method", nameof(Instant.ToString))]
-    public void Returns_the_Instant_representation()
+    public void Returns_this_representation()
     {
         const string timeZone = "America/New_York";
         var utc20240101At10Am = DateTimeOffset.Parse("2024-01-01 10:00:00 +00:00");

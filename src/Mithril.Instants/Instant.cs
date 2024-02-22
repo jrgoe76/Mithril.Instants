@@ -25,26 +25,26 @@ public readonly record struct Instant : IComparable
 
     public long Ticks => ToLocal().Ticks;
 
-    public Instant(DateTimeOffset value, string timeZone)
+    public Instant(DateTimeOffset dateTime, string timeZone)
     {
         if (string.IsNullOrEmpty(timeZone))
         {
             throw new ArgumentException($"The {nameof(timeZone)} provided is required.", nameof(timeZone));
         }
 
-        UtcValue = value.ToUniversalTime();
+        UtcValue = dateTime.ToUniversalTime();
         _timeZone = timeZone;
     }
 
     // Use this factory method with caution, IInstantClock.Now is recommended
     [ExcludeFromCodeCoverage]
     public static Instant Now(string? timeZone = null)
-        => new (DateTimeOffset.UtcNow, timeZone ?? TimeZoneProviderDefault.TIME_ZONE);
+        => new (DateTimeOffset.UtcNow, timeZone ?? DefaultTimeZoneProvider.TIME_ZONE);
 
-    // Use this factory method with caution, IInstantFactory.Create(DateTime value) is recommended
+    // Use this factory method with caution, IInstantFactory.Create(DateTime dateTime) is recommended
     [ExcludeFromCodeCoverage]
-    public static Instant FromLocal(DateTime value, string timeZone)
-        => new (value.ToUtc(timeZone), timeZone);
+    public static Instant FromLocal(DateTime dateTime, string timeZone)
+        => new (dateTime.ToUtc(timeZone), timeZone);
 
     [ExcludeFromCodeCoverage]
     public DateTime ToLocal()

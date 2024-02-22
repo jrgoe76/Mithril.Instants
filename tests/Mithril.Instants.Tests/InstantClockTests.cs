@@ -14,6 +14,7 @@ public sealed class InstantClockTests
     private readonly Mock<IInstantFactory> _instantFactoryMock = new ();
 
     [Fact]
+    [Trait(nameof(Instant.Now), default)]
     public void Returns_Now_as_an_Instant()
     {
         ArrangeTimeProvider();

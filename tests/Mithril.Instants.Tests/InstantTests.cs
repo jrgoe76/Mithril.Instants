@@ -10,7 +10,7 @@ public sealed class InstantTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    [Trait("Constructor", nameof(Instant))]
+    [Trait("Constructor", default)]
     public void Throws_an_error_creating_an_Instant_with_a_null_or_empty_timeZone(
         string? timeZone)
     {
@@ -19,7 +19,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", nameof(Instant.Add))]
+    [Trait(nameof(Instant.Add), default)]
     public void Creates_an_Instant_from_this_with_an_added_interval()
     {
         var oneHour = TimeSpan.FromHours(1);
@@ -29,7 +29,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", $"{nameof(Instant.Subtract)}({nameof(TimeSpan)})")]
+    [Trait($"{nameof(Instant.Subtract)}({nameof(TimeSpan)})", default)]
     public void Creates_an_Instant_from_this_with_a_subtracted_interval()
     {
         var oneHour = TimeSpan.FromHours(1);
@@ -39,7 +39,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", $"{nameof(Instant.Subtract)}({nameof(Instant)})")]
+    [Trait($"{nameof(Instant.Subtract)}({nameof(Instant)})", default)]
     public void Returns_interval_between_this_and_another_Instant()
     {
         var oneHour = TimeSpan.FromHours(1);
@@ -51,7 +51,7 @@ public sealed class InstantTests
     [Theory]
     [InlineData(null)]
     [InlineData("not an Instant")]
-    [Trait("Method", nameof(Instant.CompareTo))]
+    [Trait(nameof(Instant.CompareTo), default)]
     public void Throws_an_error_comparing_to_a_null_or_no_Instant_type(
         object? obj)
     {
@@ -60,7 +60,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", nameof(Instant.CompareTo))]
+    [Trait(nameof(Instant.CompareTo), default)]
     public void Returns_minus1_comparing_to_a_bigger_Instant()
     {
         _now.CompareTo(_now.Add(TimeSpan.FromHours(1)))
@@ -68,7 +68,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", nameof(Instant.CompareTo))]
+    [Trait(nameof(Instant.CompareTo), default)]
     public void Returns_1_comparing_to_smaller_Instant()
     {
         _now.CompareTo(_now.Add(TimeSpan.FromHours(-1)))
@@ -76,7 +76,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", nameof(Instant.CompareTo))]
+    [Trait(nameof(Instant.CompareTo), default)]
     public void Returns_0_comparing_to_an_equal_Instant()
     {
         _now.CompareTo(_now)
@@ -84,7 +84,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Method", nameof(Instant.ToString))]
+    [Trait(nameof(Instant.ToString), default)]
     public void Returns_this_representation()
     {
         const string timeZone = "America/New_York";
@@ -95,7 +95,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Operator", ">")]
+    [Trait(">", default)]
     public void Asserts_the_left_Instant_is_bigger_than_the_right_one()
     {
         (_now.Add(TimeSpan.FromHours(1)) > _now)
@@ -103,7 +103,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Operator", ">=")]
+    [Trait(">=", default)]
     public void Asserts_the_left_Instant_is_bigger_than_or_equal_to_the_right_one()
     {
         var right = _now;
@@ -115,7 +115,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Operator", "<")]
+    [Trait("<", default)]
     public void Asserts_the_left_Instant_is_smaller_than_the_right_one()
     {
         (_now.Add(TimeSpan.FromHours(-1)) < _now)
@@ -123,7 +123,7 @@ public sealed class InstantTests
     }
 
     [Fact]
-    [Trait("Operator", "<=")]
+    [Trait("<=", default)]
     public void Asserts_the_left_Instant_is_smaller_than_or_equal_to_the_right_one()
     {
         var right = _now;

@@ -23,9 +23,10 @@ public sealed class InstantTests
     public void Creates_an_Instant_from_this_with_an_added_interval()
     {
         var oneHour = TimeSpan.FromHours(1);
+        var withinOneHour = new Instant(_now.ToUtc().Add(oneHour), DefaultTimeZoneProvider.TIME_ZONE);
 
         _now.Add(oneHour)
-            .Should().Be(_now with { UtcValue = _now.UtcValue.Add(oneHour) });
+            .Should().Be(withinOneHour);
     }
 
     [Fact]
@@ -33,9 +34,10 @@ public sealed class InstantTests
     public void Creates_an_Instant_from_this_with_a_subtracted_interval()
     {
         var oneHour = TimeSpan.FromHours(1);
+        var anHourAgo = new Instant(_now.ToUtc().Add(-oneHour), DefaultTimeZoneProvider.TIME_ZONE);
 
         _now.Subtract(oneHour)
-            .Should().Be(_now with { UtcValue = _now.UtcValue.Subtract(oneHour) });
+            .Should().Be(anHourAgo);
     }
 
     [Fact]
@@ -87,7 +89,7 @@ public sealed class InstantTests
     [Trait(nameof(Instant.ToString), default)]
     public void Returns_this_representation()
     {
-        const string timeZone = "America/New_York";
+        var timeZone = DefaultTimeZoneProvider.TIME_ZONE;
         var utc20240101At10Am = DateTimeOffset.Parse("2024-01-01 10:00:00 +00:00");
 
         new Instant(utc20240101At10Am, timeZone).ToString()

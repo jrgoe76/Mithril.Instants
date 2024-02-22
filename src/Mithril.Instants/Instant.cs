@@ -6,24 +6,25 @@ namespace Mithril.Instants;
 public readonly record struct Instant : IComparable
 {
     private readonly string _timeZone;
+    private readonly DateTime _localDateTime;
+    
+    internal DateTimeOffset UtcDateTime { get; init; }
 
-    internal DateTimeOffset UtcValue { get; init; }
+    public DayOfWeek DayOfWeek => _localDateTime.DayOfWeek;
+    public DateTime Date => _localDateTime.Date;
+    public int Year => _localDateTime.Year;
+    public int Month => _localDateTime.Month;
+    public int Day => _localDateTime.Day;
 
-    public DayOfWeek DayOfWeek => ToLocal().DayOfWeek;
-    public DateTime Date => ToLocal().Date;
-    public int Year => ToLocal().Year;
-    public int Month => ToLocal().Month;
-    public int Day => ToLocal().Day;
+    public TimeSpan TimeOfDay => _localDateTime.TimeOfDay;
+    public int Hour => _localDateTime.Hour;
+    public int Minute => _localDateTime.Minute;
+    public int Second => _localDateTime.Second;
+    public int Millisecond => _localDateTime.Millisecond;
+    public int Microsecond => _localDateTime.Microsecond;
+    public int Nanosecond => _localDateTime.Nanosecond;
 
-    public TimeSpan TimeOfDay => ToLocal().TimeOfDay;
-    public int Hour => ToLocal().Hour;
-    public int Minute => ToLocal().Minute;
-    public int Second => ToLocal().Second;
-    public int Millisecond => ToLocal().Millisecond;
-    public int Microsecond => ToLocal().Microsecond;
-    public int Nanosecond => ToLocal().Nanosecond;
-
-    public long Ticks => ToLocal().Ticks;
+    public long Ticks => _localDateTime.Ticks;
 
     public Instant(DateTimeOffset dateTime, string timeZone)
     {
@@ -32,8 +33,9 @@ public readonly record struct Instant : IComparable
             throw new ArgumentException($"The {nameof(timeZone)} provided is required.", nameof(timeZone));
         }
 
-        UtcValue = dateTime.ToUniversalTime();
         _timeZone = timeZone;
+        UtcDateTime = dateTime.ToUniversalTime();
+        _localDateTime = UtcDateTime.ToLocal(_timeZone);
     }
 
     // Use this factory method with caution, IInstantClock.Now is recommended
@@ -47,17 +49,21 @@ public readonly record struct Instant : IComparable
         => new (dateTime.ToUtc(timeZone), timeZone);
 
     [ExcludeFromCodeCoverage]
+    public DateTimeOffset ToUtc()
+        => UtcDateTime;
+
+    [ExcludeFromCodeCoverage]
     public DateTime ToLocal()
-        => UtcValue.ToLocal(_timeZone);
+        => _localDateTime;
 
     public Instant Add(TimeSpan timeSpan)
-        => this with { UtcValue = UtcValue.Add(timeSpan) };
+        => new (UtcDateTime.Add(timeSpan), _timeZone);
 
     public Instant Subtract(TimeSpan timeSpan)
-        => this with { UtcValue = UtcValue.Subtract(timeSpan) };
+        => new (UtcDateTime.Subtract(timeSpan), _timeZone);
 
     public TimeSpan Subtract(Instant other)
-        => UtcValue.Subtract(other.UtcValue);
+        => UtcDateTime.Subtract(other.UtcDateTime);
 
     public int CompareTo(object? obj)
     {
@@ -72,16 +78,16 @@ public readonly record struct Instant : IComparable
     }
 
     public override string ToString()
-        => $"{ToLocal():g} ( {_timeZone} )";
+        => $"{_localDateTime:g} ( {_timeZone} )";
 
     public static bool operator > (Instant left, Instant right)
-        => left.UtcValue > right.UtcValue;
+        => left.UtcDateTime > right.UtcDateTime;
 
     public static bool operator >= (Instant left, Instant right)
         => left > right || left == right;
 
     public static bool operator < (Instant left, Instant right)
-        => left.UtcValue < right.UtcValue;
+        => left.UtcDateTime < right.UtcDateTime;
 
     public static bool operator <= (Instant left, Instant right)
         => left < right || left == right;

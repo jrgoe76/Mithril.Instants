@@ -5,10 +5,9 @@ namespace Mithril.Instants;
 
 public readonly record struct Instant : IComparable
 {
+    private readonly DateTimeOffset _utcDateTime;
     private readonly string _timeZone;
     private readonly DateTime _localDateTime;
-    
-    internal DateTimeOffset UtcDateTime { get; init; }
 
     public DayOfWeek DayOfWeek => _localDateTime.DayOfWeek;
     public DateTime Date => _localDateTime.Date;
@@ -33,9 +32,9 @@ public readonly record struct Instant : IComparable
             throw new ArgumentException($"The {nameof(timeZone)} provided is required.", nameof(timeZone));
         }
 
+        _utcDateTime = dateTime.ToUniversalTime();
         _timeZone = timeZone;
-        UtcDateTime = dateTime.ToUniversalTime();
-        _localDateTime = UtcDateTime.ToLocal(_timeZone);
+        _localDateTime = _utcDateTime.ToLocal(_timeZone);
     }
 
     // Use this factory method with caution, IInstantClock.Now is recommended
@@ -43,27 +42,38 @@ public readonly record struct Instant : IComparable
     public static Instant Now(string? timeZone = null)
         => new (DateTimeOffset.UtcNow, timeZone ?? DefaultTimeZoneProvider.TIME_ZONE);
 
-    // Use this factory method with caution, IInstantFactory.Create(DateTime dateTime) is recommended
     [ExcludeFromCodeCoverage]
     public static Instant FromLocal(DateTime dateTime, string timeZone)
         => new (dateTime.ToUtc(timeZone), timeZone);
 
+    public Instant New(DateTimeOffset dateTime)
+        => new (dateTime, _timeZone);
+
     [ExcludeFromCodeCoverage]
     public DateTimeOffset ToUtc()
-        => UtcDateTime;
+        => _utcDateTime;
 
     [ExcludeFromCodeCoverage]
     public DateTime ToLocal()
         => _localDateTime;
 
+    public Instant StartOfDay()
+        => FromLocal(_localDateTime.Date, _timeZone);
+
     public Instant Add(TimeSpan timeSpan)
-        => new (UtcDateTime.Add(timeSpan), _timeZone);
+        => New(_utcDateTime.Add(timeSpan));
 
     public Instant Subtract(TimeSpan timeSpan)
-        => new (UtcDateTime.Subtract(timeSpan), _timeZone);
+        => New(_utcDateTime.Subtract(timeSpan));
 
     public TimeSpan Subtract(Instant other)
-        => UtcDateTime.Subtract(other.UtcDateTime);
+        => _utcDateTime.Subtract(other._utcDateTime);
+
+    public Instant AddMonths(int months)
+        => New(_utcDateTime.AddMonths(months));
+
+    public Instant AddYears(int years)
+        => New(_utcDateTime.AddYears(years));
 
     public int CompareTo(object? obj)
     {
@@ -81,13 +91,13 @@ public readonly record struct Instant : IComparable
         => $"{_localDateTime:g} ( {_timeZone} )";
 
     public static bool operator > (Instant left, Instant right)
-        => left.UtcDateTime > right.UtcDateTime;
+        => left._utcDateTime > right._utcDateTime;
 
     public static bool operator >= (Instant left, Instant right)
         => left > right || left == right;
 
     public static bool operator < (Instant left, Instant right)
-        => left.UtcDateTime < right.UtcDateTime;
+        => left._utcDateTime < right._utcDateTime;
 
     public static bool operator <= (Instant left, Instant right)
         => left < right || left == right;

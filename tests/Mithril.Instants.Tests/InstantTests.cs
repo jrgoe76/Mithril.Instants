@@ -18,36 +18,95 @@ public sealed class InstantTests
             .Should().Throw<ArgumentException>();
     }
 
-    [Fact]
+    [Theory]
+    [InlineData("2024-01-01 00:00:00 -05:00", "America/New_York", "2024-01-01 5:00:00 +00:00")]
+    [InlineData("2024-01-02 01:00:00 +00:00", "America/New_York", "2024-01-01 5:00:00 +00:00")]
+    [InlineData("2024-01-01 20:00:00 +00:00", "Africa/Abidjan", "2024-01-01 00:00:00 +00:00")]
+    [Trait(nameof(Instant.StartOfDay), default)]
+    public void Creates_an_Instant_from_this_local_start_of_day(
+        string dateTime, string timeZone, string startOfDay)
+    {
+        var instant = new Instant(DateTimeOffset.Parse(dateTime), timeZone);
+        var expected = new Instant(DateTimeOffset.Parse(startOfDay), timeZone);
+
+        instant.StartOfDay()
+            .Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("2024-01-01 10:00:00 +00:00", "America/New_York", 5, "2024-01-01 10:05:00 +00:00")]
+    [InlineData("2024-01-01 00:00:00 +00:00", "America/New_York", -5, "2023-12-31 23:55:00 +00:00")]
+    [InlineData("2024-01-01 20:00:00 +00:00", "Africa/Abidjan", 60, "2024-01-01 21:00:00 +00:00")]
     [Trait(nameof(Instant.Add), default)]
-    public void Creates_an_Instant_from_this_with_an_added_interval()
+    public void Creates_an_Instant_from_this_with_an_added_interval(
+        string dateTime, string timeZone, double minutes, string addedDateTime)
     {
-        var oneHour = TimeSpan.FromHours(1);
-        var withinOneHour = new Instant(_now.ToUtc().Add(oneHour), DefaultTimeZoneProvider.TIME_ZONE);
+        var instant = new Instant(DateTimeOffset.Parse(dateTime), timeZone);
+        var expected = new Instant(DateTimeOffset.Parse(addedDateTime), timeZone);
 
-        _now.Add(oneHour)
-            .Should().Be(withinOneHour);
+        instant.Add(TimeSpan.FromMinutes(minutes))
+            .Should().Be(expected);
     }
 
-    [Fact]
+    [Theory]
+    [InlineData("2024-01-01 10:00:00 +00:00", "America/New_York", 5, "2024-01-01 09:55:00 +00:00")]
+    [InlineData("2024-01-01 00:00:00 +00:00", "America/New_York", -5, "2024-01-01 00:05:00 +00:00")]
+    [InlineData("2024-01-01 20:00:00 +00:00", "Africa/Abidjan", 60, "2024-01-01 19:00:00 +00:00")]
     [Trait($"{nameof(Instant.Subtract)}({nameof(TimeSpan)})", default)]
-    public void Creates_an_Instant_from_this_with_a_subtracted_interval()
+    public void Creates_an_Instant_from_this_with_a_subtracted_interval(
+        string dateTime, string timeZone, double minutes, string subtractedDateTime)
     {
-        var oneHour = TimeSpan.FromHours(1);
-        var anHourAgo = new Instant(_now.ToUtc().Add(-oneHour), DefaultTimeZoneProvider.TIME_ZONE);
+        var instant = new Instant(DateTimeOffset.Parse(dateTime), timeZone);
+        var expected = new Instant(DateTimeOffset.Parse(subtractedDateTime), timeZone);
 
-        _now.Subtract(oneHour)
-            .Should().Be(anHourAgo);
+        instant.Subtract(TimeSpan.FromMinutes(minutes))
+            .Should().Be(expected);
     }
 
-    [Fact]
+    [Theory]
+    [InlineData("2024-01-01 10:00:00 +00:00", "America/New_York", "2024-01-01 09:55:00 +00:00", 5)]
+    [InlineData("2024-01-01 00:00:00 +00:00", "America/New_York", "2024-01-01 00:05:00 +00:00", -5)]
+    [InlineData("2024-01-01 20:00:00 +00:00", "Africa/Abidjan", "2024-01-01 19:00:00 +00:00", 60)]
     [Trait($"{nameof(Instant.Subtract)}({nameof(Instant)})", default)]
-    public void Returns_interval_between_this_and_another_Instant()
+    public void Returns_interval_between_this_and_another_Instant(
+        string dateTime, string timeZone, string otherDateTime, int minutes)
     {
-        var oneHour = TimeSpan.FromHours(1);
+        var instant = new Instant(DateTimeOffset.Parse(dateTime), timeZone);
+        var otherInstant = new Instant(DateTimeOffset.Parse(otherDateTime), timeZone);
+        var expected = TimeSpan.FromMinutes(minutes);
 
-        _now.Subtract(_now.Subtract(oneHour))
-            .Should().Be(oneHour);
+        instant.Subtract(otherInstant)
+            .Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("2024-01-01 10:00:00 +00:00", "America/New_York", 2, "2024-03-01 10:00:00 +00:00")]
+    [InlineData("2024-01-01 00:00:00 +00:00", "America/New_York", -1, "2023-12-01 00:00:00 +00:00")]
+    [InlineData("2024-01-01 20:00:00 +00:00", "Africa/Abidjan", 1, "2024-02-01 20:00:00 +00:00")]
+    [Trait(nameof(Instant.AddMonths), default)]
+    public void Creates_an_Instant_from_this_with_added_months(
+        string dateTime, string timeZone, int months, string addedDateTime)
+    {
+        var instant = new Instant(DateTimeOffset.Parse(dateTime), timeZone);
+        var expected = new Instant(DateTimeOffset.Parse(addedDateTime), timeZone);
+
+        instant.AddMonths(months)
+            .Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("2024-01-01 10:00:00 +00:00", "America/New_York", 2, "2026-01-01 10:00:00 +00:00")]
+    [InlineData("2024-01-01 00:00:00 +00:00", "America/New_York", -1, "2023-01-01 00:00:00 +00:00")]
+    [InlineData("2024-01-01 20:00:00 +00:00", "Africa/Abidjan", 1, "2025-01-01 20:00:00 +00:00")]
+    [Trait(nameof(Instant.AddYears), default)]
+    public void Creates_an_Instant_from_this_with_added_years(
+        string dateTime, string timeZone, int years, string addedDateTime)
+    {
+        var instant = new Instant(DateTimeOffset.Parse(dateTime), timeZone);
+        var expected = new Instant(DateTimeOffset.Parse(addedDateTime), timeZone);
+
+        instant.AddYears(years)
+            .Should().Be(expected);
     }
 
     [Theory]
@@ -85,15 +144,16 @@ public sealed class InstantTests
             .Should().Be(0);
     }
 
-    [Fact]
+    [Theory]
+    [InlineData("2024-01-02 01:00:00 +00:00", "America/New_York", "1/1/2024 8:00 PM ( America/New_York )")]
+    [InlineData("2024-01-01 10:00:00 -04:00", "America/New_York", "1/1/2024 9:00 AM ( America/New_York )")]
+    [InlineData("2024-01-01 20:00:00 -05:00", "Africa/Abidjan", "1/2/2024 1:00 AM ( Africa/Abidjan )")]
     [Trait(nameof(Instant.ToString), default)]
-    public void Returns_this_representation()
+    public void Returns_this_representation(
+        string dateTime, string timeZone, string representation)
     {
-        var timeZone = DefaultTimeZoneProvider.TIME_ZONE;
-        var utc20240101At10Am = DateTimeOffset.Parse("2024-01-01 10:00:00 +00:00");
-
-        new Instant(utc20240101At10Am, timeZone).ToString()
-            .Should().Be($"1/1/2024 5:00 AM ( {timeZone} )");
+        new Instant(DateTimeOffset.Parse(dateTime), timeZone).ToString()
+            .Should().Be(representation);
     }
 
     [Fact]

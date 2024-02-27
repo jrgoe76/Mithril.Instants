@@ -8,7 +8,7 @@ namespace Mithril.Instants.Tests;
 public sealed class InstantClockTests
 {
     private static readonly DateTimeOffset _utcNow = DateTimeOffset.UtcNow;
-    private readonly Instant _now = new(_utcNow, DefaultTimeZoneProvider.TIME_ZONE);
+    private readonly Instant _now = new (_utcNow, DefaultTimeZoneProvider.TIME_ZONE);
 
     private readonly FakeTimeProvider _timeProvider = new ();
     private readonly Mock<IInstantFactory> _instantFactoryMock = new ();
